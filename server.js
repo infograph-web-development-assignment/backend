@@ -32,9 +32,10 @@ server.get('/',(req,res)=>{
 
 //get the path for adding to database function
 server.post('/addToFav', addToFavHandler);
+//path for getting data from database function
+server.get('/getFavoritedData',getFavoritedDataHandler);
 
-
-//this function is to add the data in database
+// This function is to add the data in database
 function addToFavHandler(req,res)
 {
     // console.log('test');
@@ -49,5 +50,11 @@ function addToFavHandler(req,res)
 
 }
 
-
+// Function to find all saved data in database and send it back to frontend
+function getFavoritedDataHandler(req,res)
+{
+    MyDigiModel.find({},(err,data)=>{
+        res.send(data);
+    })
+}
 
