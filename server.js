@@ -32,13 +32,17 @@ server.get('/',(req,res)=>{
 
 //get the path for adding to database function
 server.post('/addToFav', addToFavHandler);
+
 //path for getting data from database function
 server.get('/getFavoritedData',getFavoritedDataHandler);
+
+// get path and info for deleting from database
+server.delete('/deleteFromFavs/:id',deleteFromFavsHandler);
+
 
 // This function is to add the data in database
 function addToFavHandler(req,res)
 {
-    // console.log('test');
     const {name,level,img} = req.body;
     const saver = new MyDigiModel({
         name:name,
@@ -55,6 +59,20 @@ function getFavoritedDataHandler(req,res)
 {
     MyDigiModel.find({},(err,data)=>{
         res.send(data);
+    })
+}
+
+
+//function deletes frpom database and sends back all other saved data
+function deleteFromFavsHandler(req,res)
+{
+    const {id} = req.params;
+    //To remove data from database depending on the id
+    MyDigiModel.remove({_id:id},(err,data)=>{
+        //To find and send back all other saved data after deleting the specific item
+        MyDigiModel.find({},(err,data)=>{
+            res.send(data);
+        })
     })
 }
 
