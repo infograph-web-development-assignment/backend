@@ -66,7 +66,7 @@ app.post("/sendTheFund", sendTheFundHandler);
 // Use get for path getapResult 
 app.get("/getapResult", getapResultHandler);
 // Use put for path updateStatus
-app.put("/updateStatus", updateStatusHandler);
+app.put("/updateStatus/:id", updateStatusHandler);
 
 // Fucntion for saving the data we get from frontend in database
 function sendTheFundHandler(req, res) {
@@ -95,7 +95,7 @@ function updateStatusHandler(req, res) {
   const { id } = req.params;
 
   MyProjectFormModel.findOne({ _id: id }, (error, data) => {
-    (data.status = status),
+    data.status = status,
       data.save().then(() => {
         MyProjectFormModel.find({}, (error, data) => {
           res.send(data);
@@ -103,3 +103,5 @@ function updateStatusHandler(req, res) {
       });
   });
 }
+
+
