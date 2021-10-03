@@ -1,18 +1,32 @@
 const express = require('express');
-const cors = require('cors');
-require('dotenv').config();
-const server = express();
-server.use(cors());
-server.use(express.json());
-const Port = process.env.PORT;
+const app = express();
 const mongoose = require('mongoose');
+const dotenv = require('dotenv');
+const routesUrls = require('./routes/routes');
+const cors = require('cors');
+dotenv.config();
+const Port = process.env.PORT;
+// connecting mongodb (Atlas)
+mongoose.connect(process.env.DATABASE_ACCESS,()=>console.log("database is connected"))
 
-// connecting mongodb
-mongoose.connect('mongodb://localhost:27017/infograph', { useNewUrlParser: true, useUnifiedTopology: true });
+app.use(express.json());
+app.use(cors());
+
+//to append routeUls to base path (/app)
+app.use('/app', routesUrls)
+
+// make sure server running on right port number
+app.listen(3004,console.log(`app listening on port: ${3004}`));
 
 
-// show port number
-server.listen(Port,console.log(`server listening on port: ${Port}`));
+
+
+
+
+
+
+
+
 
 
 // making schema for the data
@@ -26,18 +40,18 @@ const MyDigiSchema = new mongoose.Schema({
 const MyDigiModel = mongoose.model('infograph',MyDigiSchema);
 
 
-server.get('/',(req,res)=>{
+app.get('/',(req,res)=>{
     res.send("sever is alive");
 })
 
 //get the path for adding to database function
-server.post('/addToFav', addToFavHandler);
+app.post('/addToFav', addToFavHandler);
 
 //path for getting data from database function
-server.get('/getFavoritedData',getFavoritedDataHandler);
+app.get('/getFavoritedData',getFavoritedDataHandler);
 
 // get path and info for deleting from database
-server.delete('/deleteFromFavs/:id',deleteFromFavsHandler);
+app.delete('/deleteFromFavs/:id',deleteFromFavsHandler);
 
 
 // This function is to add the data in database
