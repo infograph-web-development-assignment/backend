@@ -4,7 +4,6 @@ const express = require("express");
 const app = express();
 const mongoose = require("mongoose");
 const dotenv = require("dotenv");
-const routesUrls = require("./routes/routes");
 const cors = require("cors");
 dotenv.config();
 const Port = process.env.PORT;
@@ -17,7 +16,7 @@ app.use(express.json());
 app.use(cors());
 
 //to append routeUls to base path (/app)
-app.use("/app", routesUrls);
+
 
 // make sure server running on right port number
 app.listen(3004, console.log(`app listening on port: ${3004}`));
@@ -56,29 +55,51 @@ const MyProjectFormSchema = new mongoose.Schema({
   sector: String,
   projectName: String,
   description: String,
-  status:String
+  status: String,
 });
 
+// Create model for fund form
 const MyProjectFormModel = mongoose.model("projectForm", MyProjectFormSchema);
-app.post("/sendTheFund", sendTheFundHandler);
-app.get('/getapResult',getapResultHandler);
 
+// use POSTt for path sendTheFund 
+app.post("/sendTheFund", sendTheFundHandler);
+// Use get for path getapResult 
+app.get("/getapResult", getapResultHandler);
+// Use put for path updateStatus
+app.put("/updateStatus", updateStatusHandler);
+
+// Fucntion for saving the data we get from frontend in database
 function sendTheFundHandler(req, res) {
-  const { sector, projectName, description,status } = req.body;
+  const { sector, projectName, description, status } = req.body;
   const saver = new MyProjectFormModel({
     sector: sector,
     projectName: projectName,
     description: description,
-    status:status
+    status: status,
   });
   console.log(saver);
   saver.save();
 }
 
+// Function to send all data in database to frontend
+function getapResultHandler(req, res) {
+  MyProjectFormModel.find({}, (err, data) => {
+    res.send(data);
+  });
+}
 
-  function getapResultHandler(req,res)
-  {
-    MyProjectFormModel.find({}, (err, data) => {
-        res.send(data);
+
+// Function to delete depending on the id we get from frontend then save in database the new data, then send back all data
+function updateStatusHandler(req, res) {
+  const { status } = req.body;
+  const { id } = req.params;
+
+  MyProjectFormModel.findOne({ _id: id }, (error, data) => {
+    (data.status = status),
+      data.save().then(() => {
+        MyProjectFormModel.find({}, (error, data) => {
+          res.send(data);
+        });
       });
-  }
+  });
+}
