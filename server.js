@@ -1,5 +1,3 @@
-/** @format */
-
 const express = require("express");
 const app = express();
 const mongoose = require("mongoose");
@@ -14,9 +12,6 @@ mongoose.connect(process.env.DATABASE_ACCESS, () =>
 
 app.use(express.json());
 app.use(cors());
-
-//to append routeUls to base path (/app)
-
 
 // make sure server running on right port number
 app.listen(3004, console.log(`app listening on port: ${3004}`));
@@ -40,7 +35,6 @@ function savePojectOwnerHandler(req, res) {
     username: username,
     password: password,
   });
-  console.log(saver);
   saver.save();
 }
 
@@ -77,7 +71,6 @@ function sendTheFundHandler(req, res) {
     description: description,
     status: status,
   });
-  console.log(saver);
   saver.save();
 }
 
@@ -88,12 +81,10 @@ function getapResultHandler(req, res) {
   });
 }
 
-
 // Function to delete depending on the id we get from frontend then save in database the new data, then send back all data
 function updateStatusHandler(req, res) {
   const { status } = req.body;
   const { id } = req.params;
-
   MyProjectFormModel.findOne({ _id: id }, (error, data) => {
     data.status = status,
       data.save().then(() => {
