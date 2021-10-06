@@ -1,3 +1,5 @@
+/** @format */
+
 const express = require("express");
 const app = express();
 const mongoose = require("mongoose");
@@ -52,11 +54,7 @@ const MyAdminSchema = new mongoose.Schema({
   password: String,
 });
 
-const MyAdminModel = mongoose.model(
-  "Admins",
-  MyAdminSchema
-);
-
+const MyAdminModel = mongoose.model("Admins", MyAdminSchema);
 
 app.post("/saveAdmin", saveAdminHandler);
 app.get("/getSavedAdmins", getSavedAdminsHandler);
@@ -76,7 +74,6 @@ function getSavedAdminsHandler(req, res) {
   });
 }
 
-
 // Schema for fund request
 const MyProjectFormSchema = new mongoose.Schema({
   sector: String,
@@ -88,9 +85,9 @@ const MyProjectFormSchema = new mongoose.Schema({
 // Create model for fund form
 const MyProjectFormModel = mongoose.model("projectForm", MyProjectFormSchema);
 
-// use POSTt for path sendTheFund 
+// use POSTt for path sendTheFund
 app.post("/sendTheFund", sendTheFundHandler);
-// Use get for path getapResult 
+// Use get for path getapResult
 app.get("/getapResult", getapResultHandler);
 // Use put for path updateStatus
 app.put("/updateStatus/:id", updateStatusHandler);
@@ -119,7 +116,7 @@ function updateStatusHandler(req, res) {
   const { status } = req.body;
   const { id } = req.params;
   MyProjectFormModel.findOne({ _id: id }, (error, data) => {
-    data.status = status,
+    (data.status = status),
       data.save().then(() => {
         MyProjectFormModel.find({}, (error, data) => {
           res.send(data);
@@ -128,6 +125,33 @@ function updateStatusHandler(req, res) {
   });
 }
 
+const jwt = require("jsonwebtoken");
+const posts = [
+  {
+    username: "firas",
+    title: "owner",
+  },
+  {
+    username: "ahmad",
+    title: "sas",
+  },
+];
+
+app.get("/posts",authenticateToken, (req, res) => {
+  res.json(posts.filter(post=> post.username === req.user.name));
+});
 
 
+
+function authenticateToken(req, res, next) {
+  const authHeader = req.headers["authorization"];
+  const token = authHeader && authHeader.split(" ")[1];
+  if (token==null) return res.sendStatus(401)
+
+  jwt.verify(token,process.env.ACCESS_TOKEN_SECRET,(err,user)=>{
+    if (err) return res.sendStatus(403)
+    req.user=user
+    next()
+  })
+}
 
