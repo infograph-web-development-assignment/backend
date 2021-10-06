@@ -16,6 +16,8 @@ app.use(cors());
 // make sure server running on right port number
 app.listen(3004, console.log(`app listening on port: ${3004}`));
 
+// Schema for project owners
+
 const MyProjectOwnerSchema = new mongoose.Schema({
   username: String,
   password: String,
@@ -43,6 +45,39 @@ function getSavedProjectOwnersHandler(req, res) {
     res.send(data);
   });
 }
+
+// Schema for admin
+const MyAdminSchema = new mongoose.Schema({
+  username: String,
+  password: String,
+});
+
+const MyAdminModel = mongoose.model(
+  "Admins",
+  MyAdminSchema
+);
+
+
+app.post("/saveAdmin", saveAdminHandler);
+app.get("/getSavedAdmins", getSavedAdminsHandler);
+
+function saveAdminHandler(req, res) {
+  const { username, password } = req.body;
+  const saver = new MyAdminModel({
+    username: username,
+    password: password,
+  });
+  saver.save();
+  console.log(saver)
+}
+
+function getSavedAdminsHandler(req, res) {
+  MyAdminModel.find({}, (err, data) => {
+    res.send(data);
+  });
+  console.log('all admins are back to frontend')
+}
+
 
 // Schema for fund request
 const MyProjectFormSchema = new mongoose.Schema({
@@ -94,5 +129,7 @@ function updateStatusHandler(req, res) {
       });
   });
 }
+
+
 
 
