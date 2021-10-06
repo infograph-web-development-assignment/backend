@@ -68,14 +68,12 @@ function saveAdminHandler(req, res) {
     password: password,
   });
   saver.save();
-  console.log(saver)
 }
 
 function getSavedAdminsHandler(req, res) {
   MyAdminModel.find({}, (err, data) => {
     res.send(data);
   });
-  console.log('all admins are back to frontend')
 }
 
 
